@@ -32,6 +32,104 @@ if not c['save_log_to_file']:
 images = load_images()
 
 
+def select_wallet(wallet):
+    """
+    -> Seleiona a wallet para colocar o heroi para trabalhar.
+    :wallet: STR. nome da account a ser selecionada.
+
+    :return:
+    """
+    if image_loop(images['meta3'], 'Metamask Icon', click=False):
+        clickBtn(images['meta3'], timeout=3, threshold=0.8)
+        if image_loop(images['meta'], 'Wallet Change', click=False):
+
+            # Calcular a posicao do botao de mudar a wallet na metamask
+            data = positions(images['meta'])
+            x = []
+            count = 0
+
+            # Loop para saber a posicao atual no data.
+            for n in data[0]:
+
+                if count == 2:
+
+                    # Adicionar +60 no valor para mover o mouse para o centro da imagem.
+                    x.append(n + 60)
+                else:
+                    x.append(n)
+                count += 1
+
+            # Mover o mouse ate o wallet change da metamask
+            pyautogui.moveTo(x)
+
+            # Clicar no botao wallet change da metamask
+            pyautogui.click()
+
+            # Aguardar a imagem aparecer na tela  para selecionar a wallet que irá trabalhar.
+            if image_loop(images[wallet], wallet, click=False):
+                clickBtn(images[wallet], timeout=3, threshold=0.8)
+
+            time.sleep(50)
+
+
+def test(wallet):
+    with open('db.json', 'r') as read:
+        data = json.load(read)
+
+    # n para saber qual janela do chrome deve ativar.
+    for n in data:
+
+        # Se a janela for igual a database.
+        if n['window'] == 0:
+
+            # Varrer a lista data.
+            for account in n['data']:
+
+                # Varrer a lista account com as wallets
+                for data in account:
+
+                    # Se a wallet  for igual a wallet inserida.
+                    if data['wallet'] == wallet:
+
+                        # Checar o status atual , se esta trabalhando ou não.
+
+                        if data['rest'] == 'True':
+
+
+                            # Wallet atual esta trabalhando ou esgotou o tempo de trabalhar
+                            # Deve ir descansar.
+                            # TODO Se estiver trabalhando colocar para descansar e mudar para a outra account
+                            # TODO #Gravar os dados na database e depois de colocar para descansar
+                            if wallet == 'account_1':
+
+                                # Mudar da wallet 1 para wallet 2
+                                select_wallet('account_2')
+                                logger('Sending current wallet to idle and rest.')
+                            else:
+
+                                # Mudar da wallet 2 para wallet 1
+                                select_wallet('account_1')
+
+
+                """# Saber se a account é igual a selecionada
+                if account[0]['wallet'] == wallet:
+                    print(account[0]['wallet'])
+                    print(account[0]['rest'])"""
+
+
+test('account_1')
+
+time.sleep(50)
+
+
+
+
+
+select_wallet('account_2')
+
+time.sleep(50)
+
+
 def main():
     global clickBtn, db
     #
@@ -114,7 +212,7 @@ def main():
                         logger('💪 Sending heroes to rest, first loop')
 
                         # Send heroes to rest.
-                        send_to_work(db,n, windows, 'rest')
+                        send_to_work(db, n, windows, 'rest')
 
                         # Se estiver no range do rest
 

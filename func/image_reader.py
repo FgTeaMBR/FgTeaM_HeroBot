@@ -14,6 +14,7 @@ c = yaml.safe_load(stream)
 ct = c['threshold']
 login_attempts = 0
 
+
 def clickBtn(img, timeout=3, threshold=ct['default']):
     """Search for img in the scree, if found moves the cursor over it and clicks.
     Parameters:
@@ -151,6 +152,7 @@ def positions(targets_67, threshold=ct['default'], img=None):
         rectangles.append([int(x), int(y), int(w), int(h)])
 
     rectangles, weights = cv2.groupRectangles(rectangles, 1, 0.2)
+
     return rectangles
 
 

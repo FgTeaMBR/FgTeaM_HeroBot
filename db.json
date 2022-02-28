@@ -1,1 +1,5 @@
-[[{"data": 0, "rest": "True", "heroes_work": 0, "heroes_rest": 0, "refresh_heroes": 0}]]
+[{"window": 0, "data":[
+  [{"wallet": "account_1","rest": "True","heroes_work": 0,"heroes_rest": 0,"refresh_heroes": 0}],
+  [{"wallet": "account_2","rest": "False","heroes_work": 0,"heroes_rest": 0,"refresh_heroes": 0}]
+
+]}]

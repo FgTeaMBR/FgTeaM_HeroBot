@@ -35,10 +35,12 @@ def clickBtn(img, timeout=3, threshold=ct['default']):
         img: The image that will be used as an template to find where to click.
         timeout (int): Time in seconds that it will keep looking for the img before returning with fail
         threshold(float): How confident the bot needs to be to click the buttons (values from 0 to 1)
+
     """
 
     # logger(None, progress_indicator=True)
     start = time.time()
+
     has_timed_out = False
     while not has_timed_out:
         matches = positions(img, threshold=threshold)
@@ -48,11 +50,12 @@ def clickBtn(img, timeout=3, threshold=ct['default']):
             continue
 
         x, y, w, h = matches[0]
+
         pos_click_x = x + w / 2
-        pos_click_y = y + h / 2
+        pos_click_y = (y) + h / 2
         # moveToWithRandomness(pos_click_x, pos_click_y, 1)
         pyautogui.moveTo(pos_click_x, pos_click_y)
-        pyautogui.click()
+        #pyautogui.click()
         return True
 
     return False
