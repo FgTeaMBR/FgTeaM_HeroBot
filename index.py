@@ -117,17 +117,6 @@ def test(wallet):
                     print(account[0]['rest'])"""
 
 
-test('account_1')
-
-time.sleep(50)
-
-
-
-
-
-select_wallet('account_2')
-
-time.sleep(50)
 
 
 def main():
@@ -149,14 +138,11 @@ def main():
 
     while len(windows) > count:
         db.append(
-            [{
-                "data": count,
-                "rest": "True",
-                "heroes_work": 0,
-                "heroes_rest": 0,
-                "refresh_heroes": 0
+            [{"window": 0, "data": [
+                [{"wallet": "account_1", "rest": "True", "heroes_work": 0, "heroes_rest": 0, "refresh_heroes": 0, "new_map":0}],
+                [{"wallet": "account_2", "rest": "False", "heroes_work": 0, "heroes_rest": 0, "refresh_heroes": 0, "new_map": 0}]
 
-            }]
+            ]}]
         )
         count += 1
 
@@ -178,7 +164,7 @@ def main():
             if count > total:
                 count = 0
             count += 1
-
+            islogged(last)
             # Mostrar o status atual do game, se esta trabalhando ou descansado.
             for n in db:
                 if last["window"] == db[n][0]['data']:
