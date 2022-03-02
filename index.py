@@ -30,8 +30,12 @@ if not c['save_log_to_file']:
 images = load_images()
 windows = windows_pyget()
 
+# abrir a database a adiciona-la a lista.
+
 try:
     db = resetDb()
+
+# Caso der erro de leitura ou FileNotFound criar um novo.
 except Exception:
     with open('db.json', 'w') as write:
         dados = [{"window": 0, "data": [
@@ -44,9 +48,12 @@ except Exception:
         json.dump(dados, write, indent=4)
 
 
+# main loop
 def main():
     global db
     count = 0
+
+    # Caso o numero de windows na database for menor que as a janelas ativas atuais.
     while len(windows) > len(db):
         db.append(
             [{"window": count, "data": [
@@ -58,35 +65,40 @@ def main():
             ]}]
         )
         count += 1
-
+    # Gravar as janelas que estao faltando na database
     with open('db.json', 'w') as data:
         json.dump(db, data, indent=4)
 
     while True:
 
-        # Reset Database
+        # Resetar a Database
         db = resetDb()
 
-        count = 0
-        total = 0
+        # Para cada janela do Google Chrome na windows list
         for last in windows:
+
+            # Para cada item na database
             for list_index in db:
+
+                # Para cada item na window atual da database
                 for k in list_index:
+
+                    # Se a janela atual ativa do Chrome for igual a janela da database
                     if last['data'] == k['window']:
                         last["window"].activate()
-                        for n in enumerate(windows):
-                            total += 1
+
                         print()
                         logger(f'Activating Bot Window {k["window"]}')
-                        if count > total:
-                            count = 0
 
+                        # Verificar se todas as janelas estao logadas.
                         islogged(last)
-                            # Varrer a lista data.
+
+                        # Varrer a lista data.
                         for account_list in k['data']:
 
                             # Varrer a lista account com as wallets
                             for data_list in account_list:
+
                                 # Checar o status atual , se esta trabalhando ou não.
                                 if data_list['rest'] == 'False':
 
@@ -103,7 +115,7 @@ def main():
                                                     dados[k["window"]][0]['data'][0][0]['rest'] = 'True'
                                                     dados[k["window"]][0]['data'][1][0]['rest'] = 'False'
                                                     dados[k["window"]][0]['data'][1][0]['heroes_work'] = now
-                                                    dados[k["window"]][0]['data'][1][0]['heroes_work'] = now
+                                                    dados[k["window"]][0]['data'][0][0]['heroes_work'] = now
                                                     json.dump(dados, write, indent=4)
                                             send_to_work('rest')
                                             select_wallet('account_2')
@@ -131,7 +143,8 @@ def main():
                                         logger(f'Current Working: {data_list["wallet"]}')
 
                                         next_reboot = data_list["heroes_work"] + (t["send_heroes_for_work"] * 60)
-                                        next_refresh = data_list["refresh_heroes"] + (t["refresh_heroes_positions"] * 60)
+                                        next_refresh = data_list["refresh_heroes"] + (
+                                                    t["refresh_heroes_positions"] * 60)
                                         logger(
                                             f'Time for next hero Work: {datetime.fromtimestamp(next_reboot).strftime("%H:%M:%S")}. Current Set: {t["send_heroes_for_work"]} minutes.')
                                         logger(
@@ -153,7 +166,6 @@ def main():
                                                     dados[k["window"]][0]['data'][1][0]['refresh_heroes'] = now
                                                     json.dump(dados, write, indent=4)
                                                     refreshHeroesPositions()
-                    count += 1
 
 
 if __name__ == '__main__':
