@@ -5,7 +5,7 @@ import time
 
 def windows_pyget():
     """:retorna uma lista com todas as janelas do Google Chrome ativas
-        com o jogo Bombcrypto.
+        com o Jogo Bombcrypto.
     """
     windows = []
     count = 0
