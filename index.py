@@ -5,7 +5,6 @@ from func.login_func import *
 from func.heroes_func import *
 from func.files_func import *
 
-import pyautogui
 import time
 
 import yaml
@@ -18,8 +17,6 @@ ct = c['threshold']
 ch = c['home']
 api = c['discord_api']
 t = c['time_intervals']
-pause = c['time_intervals']['interval_between_moviments']
-pyautogui.PAUSE = pause
 
 login_attempts = 0
 db = []
@@ -65,6 +62,7 @@ def main():
             ]}]
         )
         count += 1
+        
     # Gravar as janelas que estao faltando na database
     with open('db.json', 'w') as data:
         json.dump(db, data, indent=4)
@@ -105,18 +103,25 @@ def main():
                                     # Se estiver trabalhando verificar se precisa colocar pra descansar
                                     now = time.time()
                                     if now - data_list["heroes_work"] > addRandomness(t['send_heroes_for_work'] * 60):
-                                        logger(f'Window {last["data"]} {data_list["wallet"]} is working.')
-                                        logger(f'Sending Window {last["data"]} {data_list["wallet"]} to rest.')
+                                        logger(
+                                            f'Window {last["data"]} {data_list["wallet"]} is working.')
+                                        logger(
+                                            f'Sending Window {last["data"]} {data_list["wallet"]} to rest.')
 
                                         if data_list['wallet'] == 'account_1':
                                             with open('db.json', 'r') as read:
                                                 dados = json.load(read)
                                                 with open('db.json', 'w') as write:
-                                                    dados[k["window"]][0]['data'][0][0]['rest'] = 'True'
-                                                    dados[k["window"]][0]['data'][1][0]['rest'] = 'False'
-                                                    dados[k["window"]][0]['data'][1][0]['heroes_work'] = now
-                                                    dados[k["window"]][0]['data'][0][0]['heroes_work'] = now
-                                                    json.dump(dados, write, indent=4)
+                                                    dados[k["window"]
+                                                          ][0]['data'][0][0]['rest'] = 'True'
+                                                    dados[k["window"]
+                                                          ][0]['data'][1][0]['rest'] = 'False'
+                                                    dados[k["window"]
+                                                          ][0]['data'][1][0]['heroes_work'] = now
+                                                    dados[k["window"]
+                                                          ][0]['data'][0][0]['heroes_work'] = now
+                                                    json.dump(
+                                                        dados, write, indent=4)
                                             send_to_work('rest')
                                             select_wallet('account_2')
                                             if image_loop(images['connect-wallet'], 'Connect Wallet', click=False):
@@ -127,11 +132,16 @@ def main():
                                             with open('db.json', 'r') as read:
                                                 dados = json.load(read)
                                                 with open('db.json', 'w') as write:
-                                                    dados[k["window"]][0]['data'][1][0]['rest'] = 'True'
-                                                    dados[k["window"]][0]['data'][0][0]['rest'] = 'False'
-                                                    dados[k["window"]][0]['data'][1][0]['heroes_work'] = now
-                                                    dados[k["window"]][0]['data'][0][0]['heroes_work'] = now
-                                                    json.dump(dados, write, indent=4)
+                                                    dados[k["window"]
+                                                          ][0]['data'][1][0]['rest'] = 'True'
+                                                    dados[k["window"]
+                                                          ][0]['data'][0][0]['rest'] = 'False'
+                                                    dados[k["window"]
+                                                          ][0]['data'][1][0]['heroes_work'] = now
+                                                    dados[k["window"]
+                                                          ][0]['data'][0][0]['heroes_work'] = now
+                                                    json.dump(
+                                                        dados, write, indent=4)
                                             send_to_work('rest')
                                             select_wallet('account_1')
                                             if image_loop(images['connect-wallet'], 'Connect Wallet', click=False):
@@ -139,12 +149,15 @@ def main():
 
                                             send_to_work('all')
                                     else:
-                                        logger(f'Current status of Window {last["data"]}')
-                                        logger(f'Current Working: {data_list["wallet"]}')
+                                        logger(
+                                            f'Current status of Window {last["data"]}')
+                                        logger(
+                                            f'Current Working: {data_list["wallet"]}')
 
-                                        next_reboot = data_list["heroes_work"] + (t["send_heroes_for_work"] * 60)
+                                        next_reboot = data_list["heroes_work"] + (
+                                            t["send_heroes_for_work"] * 60)
                                         next_refresh = data_list["refresh_heroes"] + (
-                                                    t["refresh_heroes_positions"] * 60)
+                                            t["refresh_heroes_positions"] * 60)
                                         logger(
                                             f'Time for next hero Work: {datetime.fromtimestamp(next_reboot).strftime("%H:%M:%S")}. Current Set: {t["send_heroes_for_work"]} minutes.')
                                         logger(
@@ -156,15 +169,19 @@ def main():
                                             with open('db.json', 'r') as read:
                                                 dados = json.load(read)
                                                 with open('db.json', 'w') as write:
-                                                    dados[k["window"]][0]['data'][0][0]['refresh_heroes'] = now
-                                                    json.dump(dados, write, indent=4)
+                                                    dados[k["window"]
+                                                          ][0]['data'][0][0]['refresh_heroes'] = now
+                                                    json.dump(
+                                                        dados, write, indent=4)
                                                     refreshHeroesPositions()
                                         else:
                                             with open('db.json', 'r') as read:
                                                 dados = json.load(read)
                                                 with open('db.json', 'w') as write:
-                                                    dados[k["window"]][0]['data'][1][0]['refresh_heroes'] = now
-                                                    json.dump(dados, write, indent=4)
+                                                    dados[k["window"]
+                                                          ][0]['data'][1][0]['refresh_heroes'] = now
+                                                    json.dump(
+                                                        dados, write, indent=4)
                                                     refreshHeroesPositions()
 
 
