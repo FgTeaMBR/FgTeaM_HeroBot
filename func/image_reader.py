@@ -15,6 +15,8 @@ ct = c['threshold']
 login_attempts = 0
 
 
+
+
 def clickBtn(img, timeout=3, threshold=ct['default']):
     """Search for img in the scree, if found moves the cursor over it and clicks.
     Parameters:

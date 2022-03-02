@@ -17,11 +17,11 @@ ch = c['home']
 api = c['discord_api']
 
 
-def resetDb(db):
+def resetDb():
     # Resetar a Database
     with open('db.json', 'r') as reset:
-        db = json.load(reset)
-    return db
+        data = json.load(reset)
+    return data
 
 
 def isWorking(bar, buttons):
@@ -145,7 +145,6 @@ def goToHeroes():
         global login_attempts
         login_attempts = 0
 
-    # TODO tirar o sleep quando colocar o pulling
     time.sleep(1)
     clickBtn(images['hero-icon'])
     time.sleep(randint(1, 3))
@@ -218,13 +217,12 @@ def refreshHeroes():
     goToGame()
 
 
-def send_to_work(db, n, windows, mode):
-    now = time.time()
-    # Loop no windows para saber qual janela precisa ativar.
-    for k in windows:
-        if db[n][0]['data'] == k['data']:
-            k["window"].activate()
-    logger('Sending Window {} to {}'.format(db[n][0]['data'], 'Work' if mode == 'all' else 'Rest'))
+def send_to_work(mode):
+    """:db
+    database recebe o data_list
+
+    :cvar
+    """
     # Dados Default Colocar pra trabalhar para iniciar o loop
     goToHeroes()
     time.sleep(2)
@@ -235,22 +233,6 @@ def send_to_work(db, n, windows, mode):
     if c['send_screenshot']:
         if mode == 'all':
             sendStashToDiscord()
-
-    # Gravar os dados
-    with open('db.json', 'r') as read:
-        dados = json.load(read)
-        with open('db.json', 'w') as data:
-            if mode == 'all':
-                dados[n][0]['heroes_work'] = now
-                dados[n][0]['rest'] = 'False'
-                dados[n][0]['refresh_heroes'] = now
-            else:
-                dados[n][0]['heroes_rest'] = now
-                dados[n][0]['rest'] = 'True'
-                dados[n][0]['refresh_heroes'] = now
-            json.dump(dados, data)
-            read.close()
-    resetDb(db)
 
 
 def sendStashToDiscord():

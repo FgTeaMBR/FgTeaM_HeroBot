@@ -68,3 +68,43 @@ def clickFullRest():
             clickBtn(images['rest'])
         else:
             return
+
+
+def select_wallet(wallet):
+    """Seleiona a wallet para colocar o heroi para trabalhar.
+
+
+    :param
+        wallet: (STR). nome da account a ser selecionada.
+    """
+    if image_loop(images['meta3'], 'Metamask Icon', click=True):
+        clickBtn(images['meta3'], timeout=3, threshold=0.8)
+        if image_loop(images['meta'], 'Wallet Change', click=False):
+
+            # Calcular a posicao do botao de mudar a wallet na metamask
+            data = positions(images['meta'])
+            x = []
+            count = 0
+
+            # Loop para saber a posicao atual no data.
+            for n in data[0]:
+
+                if count == 2:
+
+                    # Adicionar +60 no valor para mover o mouse para o centro da imagem.
+                    x.append(n + 60)
+                else:
+                    x.append(n)
+                count += 1
+
+            # Mover o mouse ate o wallet change da metamask
+            pyautogui.moveTo(x)
+
+            # Clicar no botao wallet change da metamask
+            pyautogui.click()
+
+            # Aguardar a imagem aparecer na tela  para selecionar a wallet que irá trabalhar.
+            if image_loop(images[wallet], wallet, click=True):
+                clickBtn(images[wallet], timeout=3, threshold=0.8)
+                time.sleep(3)
+                pyautogui.hotkey('ctrl', 'f5')

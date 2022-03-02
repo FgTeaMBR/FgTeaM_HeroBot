@@ -13,6 +13,9 @@ login_attempts = 0
 
 images = load_images()
 
+#def unlock_wallet():
+
+
 
 def login():
     global login_attempts
@@ -39,13 +42,15 @@ def login():
             pyautogui.hotkey('ctrl', 'f5')
             login()
     else:
-
-        if clickBtn(images['connect-wallet']):
+        logger('Metamask is logged.')
+        if check_login(images['connect-wallet']):
+            image_loop(images['connect-wallet'], 'Connect Wallet Button', True, timeout=5)
             logger('🎉 Connect wallet button detected, logging in!')
+
             logger('Waiting for New Connect Wallet')
-            image_loop(images['connect-wallet2'], 'connect-wallet2', True, timeout=5)
+            image_loop(images['connect-wallet2'], 'New Connect Wallet', True, timeout=5)
             image_loop(images['select-wallet-2'], 'Sign', True, timeout=5)
-            image_loop(images['treasure-hunt-icon'], 'treasure-hunt-icon', True)
+            image_loop(images['treasure-hunt-icon'], 'Treasure Hunt', True)
             login_attempts += 0
 
 
