@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime
-from func.login_func import *
-from func.heroes_func import *
-from func.files_func import *
+from src.logger import logger
+import func.login_func
+import func.heroes_func
+import func.files_func
 
 import time
 
@@ -18,19 +19,20 @@ ch = c['home']
 api = c['discord_api']
 t = c['time_intervals']
 
+
 login_attempts = 0
 db = []
 
 if not c['save_log_to_file']:
     logger('Warning, logs files are disable.')
 
-images = load_images()
-windows = windows_pyget()
+images = func.load_images()
+windows = func.windows_pyget()
 
 # abrir a database a adiciona-la a lista.
 
 try:
-    db = resetDb()
+    db = func.resetDb()
 
 # Caso der erro de leitura ou FileNotFound criar um novo.
 except Exception:
@@ -62,7 +64,7 @@ def main():
             ]}]
         )
         count += 1
-        
+
     # Gravar as janelas que estao faltando na database
     with open('db.json', 'w') as data:
         json.dump(db, data, indent=4)
