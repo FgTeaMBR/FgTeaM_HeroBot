@@ -55,7 +55,7 @@ def clickBtn(img, timeout=3, threshold=ct['default']):
         pos_click_y = (y) + h / 2
         # moveToWithRandomness(pos_click_x, pos_click_y, 1)
         pyautogui.moveTo(pos_click_x, pos_click_y)
-        #pyautogui.click()
+        pyautogui.click()
         return True
 
     return False

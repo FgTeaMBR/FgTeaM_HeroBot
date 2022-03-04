@@ -79,35 +79,12 @@ def islogged(last):
 
     logged = False
 
-    while not logged:
-        time.sleep(5)
+    while not logged:        
         logger('Checking game status.')
         logger(f'Loggin Attempts: {login_attempts}')
         if check_login(images['new-map']):
-            logger('New Map Found!')
-            with open('db.json', 'r') as read:
-                data = json.load(read)
-
-            for n in data:
-                print(n)
-                # Se a janela do Chrome for igual a database.
-                if n[0]['window'] == last['data']:
-
-                    logger('Window Found. Window = Data')
-                    # Varrer a lista data
-                    for account in n[0]['data']:
-
-                        # Varrer a lista account com as wallets.
-                        for data in account:
-                            if data['rest'] == 'False':
-                                new_map = data['new_map']
-
-                                with open('db.json', 'w') as data_dump:
-                                    new_map += 1
-                                    data['new_map'] = new_map
-                                    json.dump(data, data_dump)
-                                    read.close()
-            logged = True
+            logger('New Map Found!')     
+            logged = True       
             break
         else:
             logger('No New Map found')

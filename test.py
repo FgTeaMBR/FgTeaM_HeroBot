@@ -77,7 +77,7 @@ class Login():
         pass
 
     def login_again(self):
-        """Loga no game se estiver deslogado."""
+        """Loga no game se estiver deslogado. """
         if clickBtn(images['meta1']):
             if image_loop(images['unlock'], 'Unlock', False, timeout=5):           
             

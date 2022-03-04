@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from cv2 import cv2
 from os import listdir
-from src.logger import logger
-from func.login_func import *
 import time
 import numpy as np
 import mss
 import yaml
+import pyautogui
+from src.logger import logger
 
 # Load config file.
 stream = open("config.yaml", 'r')
@@ -69,7 +69,6 @@ def check_login(img, name=None, timeout=1, threshold=ct['default']):
 
 
 def image_loop(img, name, click, timeout=15):
-    global login_attempts
     found = False
 
     while not found:
@@ -79,15 +78,13 @@ def image_loop(img, name, click, timeout=15):
             if click:
                 clickBtn(img)
                 found = True
-                logger(f'{name} found! Processing..')
             else:
                 found = True
         if timeout == 0:
-            login_attempts += 1
-            logger(f'{name} not found!')
-            break
+            logger(f'{name} Not Found!')
+            return False
         timeout -= 1
-    return found
+    return True
 
 
 def printScreen():

@@ -1,15 +1,19 @@
 # -*- coding: utf-8 -*-
+import time
+import yaml
+import json
 
 from datetime import datetime
 from src.logger import logger
-import func.login_func
-import func.heroes_func
-import func.files_func
+from func.image_reader import load_images, image_loop
+from func.heroes_func import resetDb, send_to_work, refreshHeroesPositions
+from func.mouse_move import addRandomness
+from func.mouse_click import select_wallet
+from func.login_func import islogged
+from func.files_func import windows_pyget
 
-import time
+import test
 
-import yaml
-import json
 
 # Load config file.
 stream = open("config.yaml", 'r')
@@ -19,6 +23,8 @@ ch = c['home']
 api = c['discord_api']
 t = c['time_intervals']
 
+login = test.Login()
+heroes = test.Heroes()
 
 login_attempts = 0
 db = []
@@ -26,13 +32,13 @@ db = []
 if not c['save_log_to_file']:
     logger('Warning, logs files are disable.')
 
-images = func.load_images()
-windows = func.windows_pyget()
+images = load_images()
+windows = windows_pyget()
 
 # abrir a database a adiciona-la a lista.
 
 try:
-    db = func.resetDb()
+    db = resetDb()
 
 # Caso der erro de leitura ou FileNotFound criar um novo.
 except Exception:
@@ -91,7 +97,7 @@ def main():
                         logger(f'Activating Bot Window {k["window"]}')
 
                         # Verificar se todas as janelas estao logadas.
-                        islogged(last)
+                        login.is_logged(last)
 
                         # Varrer a lista data.
                         for account_list in k['data']:
@@ -151,6 +157,8 @@ def main():
 
                                             send_to_work('all')
                                     else:
+
+                                        # Se não estiver na hora de enviar pra descansar , printar as mensagens de log.
                                         logger(
                                             f'Current status of Window {last["data"]}')
                                         logger(

@@ -78,7 +78,6 @@ def descobreRaridade(bar):
 
 
 def clickGreenBarButtons(baus):
-    # ele clicka nos q tao trabaiano mas axo q n importa
     offset = 140
 
     green_bars = positions(images['green-bar'], threshold=ct['green_bar'])
@@ -183,9 +182,6 @@ def send_work():
 def refreshHeroes():
     logger('🏢 Search for heroes to work')
 
-    global baus
-    #baus = checkBaus()
-
     goToHeroes()
 
     if c['select_heroes_mode'] != "full":
@@ -205,7 +201,7 @@ def refreshHeroes():
         if c['select_heroes_mode'] == 'full':
             buttonsClicked = clickFullBarButtons()
         elif c['select_heroes_mode'] == 'green':
-            buttonsClicked = clickGreenBarButtons(baus)
+            buttonsClicked = clickGreenBarButtons()
         else:
             buttonsClicked = clickButtons()
 
@@ -218,11 +214,7 @@ def refreshHeroes():
 
 
 def send_to_work(mode):
-    """:db
-    database recebe o data_list
-
-    :cvar
-    """
+    
     # Dados Default Colocar pra trabalhar para iniciar o loop
     goToHeroes()
     time.sleep(2)
