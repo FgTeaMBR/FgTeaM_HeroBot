@@ -22,8 +22,10 @@ class Heroes:
 
     def send_work(self, mode):
         """ Envia os herois pra descansar ou trabalhar.
-        all: Envia todos os herois para trabalhar.
-        rest: Envia todos os herois para descansar.
+
+        :param mode: Envia todos os herois para trabalhar caso receba um valor string 'all'.
+            Se o valor recebido for 'rest', envia todos os herois para descansar.
+
 
         """
 
@@ -78,6 +80,7 @@ class Heroes:
     def login_attempts(self):
         pass
 
+
 heroes = Heroes()
 
 
@@ -87,27 +90,35 @@ class Login:
 
     def login_again(self):
         """Loga no game se estiver deslogado. """
+
+        # Se a wallet estiver lockada.
         if clickBtn(images['meta1']):
             if image_loop(images['unlock'], 'Unlock', False, timeout=5):
 
+                # Se o auto_login estiver habilitado na config, o bot irá desbloquear a wallet usado o password que está na config.
                 if c['auto_login']:
                     if self.unlock_wallet():
                         if check_login(images['select-wallet-2']):
                             clickBtn(images['select-wallet-2'])
                 else:
+
+                    # Caso o auto_login esteja desabilitado , irá printar uma menssagem de erro.
                     logger('\033[31mWARNING: Wallet Locked!!\033[0;0m')
                     logger('\033[31mAuto login not enabled in config.yaml\033[0;0m')
 
+            # Caso não apareça a imagem de unlock wallet. Bot irá aguardar pelo botao de sign-in
             elif image_loop(images['select-wallet-2'], 'Sign', True, timeout=5):
                 logger('Sign Button Found')
-                # clickBtn(images['meta3'])
 
             else:
-                logger("Can't log-in, reseting browser.")
+
+                # Caso não ache nenhum dos 2 botões irá dar um refresh na pag.
+                logger("Can't log-in, resetting browser.")
                 pyautogui.hotkey('ctrl', 'f5')
                 self.login_again()
 
         else:
+
             logger('Metamask is logged.')
             self.unlocked_wallet()
 
@@ -149,6 +160,12 @@ class Login:
         pass
 
     def is_logged(self, last):
+        """Checa se todas as janelas estao logadas no game.
+
+        :param last: Recebe um 'for' de todas as janelas do Google Chrome.
+
+        :return: True ou False.
+        """
 
         logged = False
 
@@ -161,18 +178,18 @@ class Login:
                 if not check_login(images['network']):
                     logger('No Network error.')
                     if not check_login(images['ok']):
-                        logger('No Ok buttoun found.')
+                        logger('No Ok button found.')
                         if not check_login(images['connect-wallet']):
-                            logger('No connect wallet buttoun found')
+                            logger('No connect wallet button found')
                             if not check_login(images['treasure-hunt-icon']):
-                                logger('No Treasure Hunt buttoun found.')
+                                logger('No Treasure Hunt button found.')
                                 if not check_login(images['go-back-arrow']):
                                     logger('No Back arrow found.')
                                     if not check_login(images['x']):
-                                        logger('Black Screen Found. Reseting Browser')
+                                        logger('Black Screen Found. Resetting Browser')
                                         last["window"].activate()
                                         pyautogui.hotkey('ctrl', 'f5')
-                                        image_loop(images['connect-wallet'], 'Conect wallet', click=False)
+                                        image_loop(images['connect-wallet'], 'Connect wallet', click=False)
                                     else:
                                         heroes.go_to_game()
                                         logged = True
@@ -187,6 +204,7 @@ class Login:
                     else:
                         logger('Ok button Found, refreshing page and trying to login again.')
                         pyautogui.hotkey('ctrl', 'f5')
+
                         self.login_again()
                 else:
                     logger('Network error found. Check if metamask is connected to Binance Smart Chain.')
@@ -194,4 +212,4 @@ class Login:
             else:
                 self.login_again()
         if logged:
-            logger('Game logged sucessfully')
+            logger('Game logged successfully')

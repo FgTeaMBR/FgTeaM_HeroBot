@@ -15,8 +15,6 @@ ct = c['threshold']
 login_attempts = 0
 
 
-
-
 def clickBtn(img, timeout=3, threshold=ct['default']):
     """Search for img in the scree, if found moves the cursor over it and clicks.
     Parameters:
@@ -46,11 +44,17 @@ def clickBtn(img, timeout=3, threshold=ct['default']):
     return False
 
 
-
 def check_login(img, name=None, timeout=1, threshold=ct['default']):
+    """ Analisa se a imagem esta na tela.
+
+    :param img: Recebe a imagem a ser procurada.
+    :param name: Nome da imagem (opcional).
+    :param timeout: Tempo maximo de espera caso a imagem não seja encontrda.
+    :param threshold: (float) 0 a 1. Tunning para imagem analisada.
+    :return: True ou False
+    """
     if not name is None:
         pass
-        # print('waiting for "{}" button, timeout of {}s'.format(name, timeout))
     start = time.time()
     while True:
         matches = positions(img, threshold=threshold)
@@ -69,6 +73,20 @@ def check_login(img, name=None, timeout=1, threshold=ct['default']):
 
 
 def image_loop(img, name, click, timeout=15):
+    """ Aguarda a imagem aparecer na tela e mostra  uma menssagem de logger. Caso desejar clica na imagem.
+
+    :param img: Recebe o nome da imagem a ser analisada.
+
+    :param name: Nome a ser mostrado na menssagem de logger.
+
+    :param click: True ou False. Clica ou não na imagem selecionada.
+
+    :param timeout: Tempo de espera ate a imagem aparecer na tela.
+    
+    :return: True ou False
+
+
+    """
     found = False
 
     while not found:
@@ -88,6 +106,7 @@ def image_loop(img, name, click, timeout=15):
 
 
 def printScreen():
+    """Printa a tela"""
     with mss.mss() as sct:
         monitor = sct.monitors[0]
         sct_img = np.array(sct.grab(monitor))
@@ -103,11 +122,11 @@ def remove_suffix(input_string, suffix):
 
 
 def load_images(dir_path='./targets_67/'):
-    """ Programmatically loads all images of dir_path as a key:value where the
-        key is the file name without the .png suffix
+    """ Scaneia o diretorio inserido e retona um dicionario com o nome de todas as imagens encontradas
+    sem o sufixo .png
 
     Returns:
-        dict: dictionary containing the loaded images as key:value pairs.
+        dict: Dicionario com o nome das imagens encontradas no diretorio sem o sufixo .png.
     """
 
     file_names = listdir(dir_path)
@@ -137,6 +156,12 @@ def show(rectangles, img=None):
 
 
 def positions(targets_67, threshold=ct['default'], img=None):
+    """Calcula a posicao da imagem na tela e retorna uma lista com os numeros da posicao.
+
+    :param targets_67: Imagem a ser procurada na tela.
+    :param threshold: (FLOAT) 0 a 1. Tunning para procurar a imagem na tela.
+    :return: Lista com a posição da imagem.
+    """
     if img is None:
         img = printScreen()
     result = cv2.matchTemplate(img, targets_67, cv2.TM_CCOEFF_NORMED)
@@ -155,17 +180,3 @@ def positions(targets_67, threshold=ct['default'], img=None):
     return rectangles
 
 
-def checkArrows():
-    list_arrow = []
-    count = 0
-    images = load_images()
-    while True:
-        # logger('Search for arrows in the screen')
-
-        arrow = positions(images['back_mini'], threshold=ct['default'])
-        if arrow not in list_arrow:
-            list_arrow.append({count: arrow})
-        else:
-            break
-        clickBtn(images['back_mini'])
-        print(arrow)
