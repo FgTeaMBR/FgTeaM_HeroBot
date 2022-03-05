@@ -5,14 +5,7 @@ import json
 
 from datetime import datetime
 from src.logger import logger
-from func.image_reader import load_images, image_loop
-from func.heroes_func import resetDb, send_to_work, refreshHeroesPositions
-from func.mouse_move import addRandomness
-from func.mouse_click import select_wallet
-from func.login_func import islogged
-from func.files_func import windows_pyget
-
-import test
+from func import Images, Heroes, Login, Mouse, Files
 
 
 # Load config file.
@@ -23,25 +16,30 @@ ch = c['home']
 api = c['discord_api']
 t = c['time_intervals']
 
-login = test.Login()
-heroes = test.Heroes()
+login = Login()
+heroes = Heroes()
+images = Images()
+mouse = Mouse()
+
+files = Files()
 
 login_attempts = 0
+windows = files.windows_pyget()
 db = []
 
 if not c['save_log_to_file']:
     logger('Warning, logs files are disable.')
 
-images = load_images()
-windows = windows_pyget()
+
 
 # abrir a database a adiciona-la a lista.
 
 try:
-    db = resetDb()
+    db = files.resetDb()
 
 # Caso der erro de leitura ou FileNotFound criar um novo.
 except Exception:
+    logger('Database Not Found.')
     with open('db.json', 'w') as write:
         dados = [{"window": 0, "data": [
             [{"wallet": "account_1", "rest": "True", "heroes_work": 0, "heroes_rest": 0, "refresh_heroes": 0,
@@ -51,6 +49,7 @@ except Exception:
 
         ]}]
         json.dump(dados, write, indent=4)
+    logger('Database created!!')
 
 
 # main loop
@@ -60,6 +59,7 @@ def main():
 
     # Caso o numero de windows na database for menor que as a janelas ativas atuais.
     while len(windows) > len(db):
+        logger(f'Appeding window {count} to database.')
         db.append(
             [{"window": count, "data": [
                 [{"wallet": "account_1", "rest": "True", "heroes_work": 0, "heroes_rest": 0, "refresh_heroes": 0,
@@ -73,12 +73,13 @@ def main():
 
     # Gravar as janelas que estao faltando na database
     with open('db.json', 'w') as data:
+        logger('Writing data to database.')
         json.dump(db, data, indent=4)
 
     while True:
 
         # Resetar a Database
-        db = resetDb()
+        db = files.resetDb()
 
         # Para cada janela do Google Chrome na windows list
         for last in windows:
@@ -110,7 +111,7 @@ def main():
 
                                     # Se estiver trabalhando verificar se precisa colocar pra descansar
                                     now = time.time()
-                                    if now - data_list["heroes_work"] > addRandomness(t['send_heroes_for_work'] * 60):
+                                    if now - data_list["heroes_work"] > mouse.add_randomness(t['send_heroes_for_work'] * 60):
                                         logger(
                                             f'Window {last["data"]} {data_list["wallet"]} is working.')
                                         logger(
@@ -130,11 +131,11 @@ def main():
                                                           ][0]['data'][0][0]['heroes_work'] = now
                                                     json.dump(
                                                         dados, write, indent=4)
-                                            send_to_work('rest')
-                                            select_wallet('account_2')
-                                            if image_loop(images['connect-wallet'], 'Connect Wallet', click=False):
-                                                islogged(last)
-                                            send_to_work('all')
+                                            heroes.send_work('rest')
+                                            login.select_wallet('account_2')
+                                            if images.image_loop(images['connect-wallet'], 'Connect Wallet', click=False):
+                                                login.is_logged(last)
+                                            heroes.send_work('all')
 
                                         else:
                                             with open('db.json', 'r') as read:
@@ -150,12 +151,12 @@ def main():
                                                           ][0]['data'][0][0]['heroes_work'] = now
                                                     json.dump(
                                                         dados, write, indent=4)
-                                            send_to_work('rest')
-                                            select_wallet('account_1')
-                                            if image_loop(images['connect-wallet'], 'Connect Wallet', click=False):
-                                                islogged(last)
+                                            heroes.send_work('rest')
+                                            login.select_wallet('account_1')
+                                            if images.image_loop(images['connect-wallet'], 'Connect Wallet', click=False):
+                                                login.is_logged(last)
 
-                                            send_to_work('all')
+                                            heroes.send_work('all')
                                     else:
 
                                         # Se não estiver na hora de enviar pra descansar , printar as mensagens de log.
@@ -173,26 +174,24 @@ def main():
                                         logger(
                                             f'Time for next hero REFRESH: {datetime.fromtimestamp(next_refresh).strftime("%H:%M:%S")}. Current Set: {t["refresh_heroes_positions"]} minutes.')
                                     now = time.time()
-                                    if now - data_list["refresh_heroes"] > addRandomness(
+                                    if now - data_list["refresh_heroes"] > mouse.add_randomness(
                                             t['refresh_heroes_positions'] * 60):
                                         if data_list['wallet'] == 'account_1':
-                                            with open('db.json', 'r') as read:
-                                                dados = json.load(read)
-                                                with open('db.json', 'w') as write:
-                                                    dados[k["window"]
+                                            dados = files.resetDb()
+                                            with open('db.json', 'w') as write:
+                                                dados[k["window"]
                                                           ][0]['data'][0][0]['refresh_heroes'] = now
-                                                    json.dump(
+                                                json.dump(
                                                         dados, write, indent=4)
-                                                    refreshHeroesPositions()
+                                                heroes.refresh_heroes_positions()
                                         else:
-                                            with open('db.json', 'r') as read:
-                                                dados = json.load(read)
-                                                with open('db.json', 'w') as write:
-                                                    dados[k["window"]
+                                            dados = files.resetDb()
+                                            with open('db.json', 'w') as write:
+                                                dados[k["window"]
                                                           ][0]['data'][1][0]['refresh_heroes'] = now
-                                                    json.dump(
+                                                json.dump(
                                                         dados, write, indent=4)
-                                                    refreshHeroesPositions()
+                                                heroes.refresh_heroes_positions()
 
 
 if __name__ == '__main__':
