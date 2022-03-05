@@ -6,8 +6,8 @@
                 [
                     {
                         "wallet": "account_1",
-                        "rest": "True",
-                        "heroes_work": 0,
+                        "rest": "False",
+                        "heroes_work": 1646442149.2481906,
                         "heroes_rest": 0,
                         "refresh_heroes": 0,
                         "new_map": 0,
@@ -17,8 +17,8 @@
                 [
                     {
                         "wallet": "account_2",
-                        "rest": "False",
-                        "heroes_work": 0,
+                        "rest": "True",
+                        "heroes_work": 1646442149.2481906,
                         "heroes_rest": 0,
                         "refresh_heroes": 0,
                         "new_map": 0,

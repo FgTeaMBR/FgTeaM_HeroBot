@@ -20,6 +20,7 @@ login = Login()
 heroes = Heroes()
 images = Images()
 mouse = Mouse()
+img = images.load_images()
 
 files = Files()
 
@@ -30,9 +31,7 @@ db = []
 if not c['save_log_to_file']:
     logger('Warning, logs files are disable.')
 
-
-
-# abrir a database a adiciona-la a lista.
+# Abrir a database, caso nao exista criar uma nova.
 
 try:
     db = files.resetDb()
@@ -52,7 +51,6 @@ except Exception:
     logger('Database created!!')
 
 
-# main loop
 def main():
     global db
     count = 0
@@ -118,80 +116,100 @@ def main():
                                             f'Sending Window {last["data"]} {data_list["wallet"]} to rest.')
 
                                         if data_list['wallet'] == 'account_1':
-                                            with open('db.json', 'r') as read:
-                                                dados = json.load(read)
-                                                with open('db.json', 'w') as write:
-                                                    dados[k["window"]
-                                                          ][0]['data'][0][0]['rest'] = 'True'
-                                                    dados[k["window"]
-                                                          ][0]['data'][1][0]['rest'] = 'False'
-                                                    dados[k["window"]
-                                                          ][0]['data'][1][0]['heroes_work'] = now
-                                                    dados[k["window"]
-                                                          ][0]['data'][0][0]['heroes_work'] = now
-                                                    json.dump(
-                                                        dados, write, indent=4)
+
+                                            # Ler a database.
+                                            dados = files.resetDb()
+
+                                            # Setar as novas variaveis
+                                            dados[k["window"]][0]['data'][0][0]['rest'] = 'True'
+                                            dados[k["window"]][0]['data'][1][0]['rest'] = 'False'
+                                            dados[k["window"]][0]['data'][1][0]['heroes_work'] = now
+                                            dados[k["window"]][0]['data'][0][0]['heroes_work'] = now
+
+                                            # Gravar os novos dados na database.
+                                            files.write_data(dados)
+
+                                            # Enviar os heroes para descansar.
                                             heroes.send_work('rest')
+
+                                            # Selecionar a waller que irá trabalhar.
                                             login.select_wallet('account_2')
-                                            if images.image_loop(images['connect-wallet'], 'Connect Wallet', click=False):
+
+                                            # Aguardar aparecer o connect button para logar novamente.
+                                            if images.image_loop(img['connect-wallet'], 'Connect Wallet', click=False):
                                                 login.is_logged(last)
+
+                                            # Enviar os heroes para trabalhar.
                                             heroes.send_work('all')
 
                                         else:
-                                            with open('db.json', 'r') as read:
-                                                dados = json.load(read)
-                                                with open('db.json', 'w') as write:
-                                                    dados[k["window"]
-                                                          ][0]['data'][1][0]['rest'] = 'True'
-                                                    dados[k["window"]
-                                                          ][0]['data'][0][0]['rest'] = 'False'
-                                                    dados[k["window"]
-                                                          ][0]['data'][1][0]['heroes_work'] = now
-                                                    dados[k["window"]
-                                                          ][0]['data'][0][0]['heroes_work'] = now
-                                                    json.dump(
-                                                        dados, write, indent=4)
+                                            # Ler a database
+                                            dados = files.resetDb()
+
+                                            # Setar as novas variaveis
+                                            dados[k["window"]][0]['data'][1][0]['rest'] = 'True'
+                                            dados[k["window"]][0]['data'][0][0]['rest'] = 'False'
+                                            dados[k["window"]][0]['data'][1][0]['heroes_work'] = now
+                                            dados[k["window"]][0]['data'][0][0]['heroes_work'] = now
+
+                                            # Gravar os novos dados na database. 
+                                            files.write_data(dados)
+
+                                            # Enviar os herois para descansar.
                                             heroes.send_work('rest')
+
+                                            # Selecionar a nova wallet que irá trabalhar.
                                             login.select_wallet('account_1')
-                                            if images.image_loop(images['connect-wallet'], 'Connect Wallet', click=False):
+
+                                            # Esperar aparecer o botão de connect
+                                            if images.image_loop(img['connect-wallet'], 'Connect Wallet', click=False):
                                                 login.is_logged(last)
 
+                                            # Enviar todos os herois para trabalhar.
                                             heroes.send_work('all')
                                     else:
 
                                         # Se não estiver na hora de enviar pra descansar , printar as mensagens de log.
-                                        logger(
-                                            f'Current status of Window {last["data"]}')
-                                        logger(
-                                            f'Current Working: {data_list["wallet"]}')
+                                        logger(f'Current status of Window {last["data"]}')
+                                        logger(f'Current Working: {data_list["wallet"]}')
 
-                                        next_reboot = data_list["heroes_work"] + (
-                                            t["send_heroes_for_work"] * 60)
-                                        next_refresh = data_list["refresh_heroes"] + (
-                                            t["refresh_heroes_positions"] * 60)
-                                        logger(
-                                            f'Time for next hero Work: {datetime.fromtimestamp(next_reboot).strftime("%H:%M:%S")}. Current Set: {t["send_heroes_for_work"]} minutes.')
-                                        logger(
-                                            f'Time for next hero REFRESH: {datetime.fromtimestamp(next_refresh).strftime("%H:%M:%S")}. Current Set: {t["refresh_heroes_positions"]} minutes.')
+                                        next_reboot = data_list["heroes_work"] + (t["send_heroes_for_work"] * 60)
+                                        next_refresh = data_list["refresh_heroes"] + (t["refresh_heroes_positions"] * 60)
+                                        logger(f'Time for next hero Work: {datetime.fromtimestamp(next_reboot).strftime("%H:%M:%S")}. Current Set: {t["send_heroes_for_work"]} minutes.')
+                                        logger(f'Time for next hero REFRESH: {datetime.fromtimestamp(next_refresh).strftime("%H:%M:%S")}. Current Set: {t["refresh_heroes_positions"]} minutes.')
+
+                                        # Fim das menssagens de log.
+                                    
+                                    # Ativar o refresh heroes.
                                     now = time.time()
-                                    if now - data_list["refresh_heroes"] > mouse.add_randomness(
-                                            t['refresh_heroes_positions'] * 60):
+                                    if now - data_list["refresh_heroes"] > mouse.add_randomness(t['refresh_heroes_positions'] * 60):
+
+                                        # Caso seja a o account_1.
                                         if data_list['wallet'] == 'account_1':
+
+                                            # Ler os dados da database.
                                             dados = files.resetDb()
-                                            with open('db.json', 'w') as write:
-                                                dados[k["window"]
-                                                          ][0]['data'][0][0]['refresh_heroes'] = now
-                                                json.dump(
-                                                        dados, write, indent=4)
-                                                heroes.refresh_heroes_positions()
+
+                                            # Setar as novas variaveis.
+                                            dados[k["window"]][0]['data'][0][0]['refresh_heroes'] = now
+
+                                            # Gravar os novos dados na database.
+                                            files.write_data(dados)
+
+                                            # Fazer o refresh heroes para salvar o status atual do mapa.
+                                            heroes.refresh_heroes_positions()
                                         else:
+                                            # Ler os dados da database.
                                             dados = files.resetDb()
-                                            with open('db.json', 'w') as write:
-                                                dados[k["window"]
-                                                          ][0]['data'][1][0]['refresh_heroes'] = now
-                                                json.dump(
-                                                        dados, write, indent=4)
-                                                heroes.refresh_heroes_positions()
+
+                                            # Setar as novas variaveis.S
+                                            dados[k["window"]][0]['data'][1][0]['refresh_heroes'] = now
+                                            
+                                            # Gravar os novos dados na database.
+                                            files.write_data(dados)
+
+                                            # Fazer o refresh heroes para salvar o status atual do mapa.
+                                            heroes.refresh_heroes_positions()
 
 
 if __name__ == '__main__':

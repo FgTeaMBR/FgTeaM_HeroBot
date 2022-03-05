@@ -187,7 +187,7 @@ class Heroes:
             'work' if mode == 'all' else 'resting'))
         self.go_to_heroes()
         time.sleep(2)
-        images.click_button(images[mode])
+        images.click_button(img[mode])
         time.sleep(1)
         self.go_to_game()
         time.sleep(2)
@@ -199,44 +199,45 @@ class Heroes:
     def go_to_heroes(self):
         """Go to Heroes page"""
         self.login_attempts()  # Para tirar os shits do pycharm
-        if images.check_login(images['go-back-arrow']):
-            images.click_button(images['go-back-arrow'])
+        if images.check_login(img['go-back-arrow']):
+            images.click_button(img['go-back-arrow'])
             time.sleep(1)
-            images.click_button(images['hero-icon'])
+            images.click_button(img['hero-icon'])
 
-        elif images.click_button(images['hero-icon']):
+        elif images.click_button(img['hero-icon']):
             pass
 
     def go_to_game(self):
         """Go back to game."""
         self.login_attempts()  # Para tirar os shits do pycharm
-        if images.check_login(images['x']):
-            images.click_button(images['x'])
+        if images.check_login(img['x']):
+            images.click_button(img['x'])
             time.sleep(2)
-            if images.check_login(images['treasure-hunt-icon']):
-                images.click_button(images['treasure-hunt-icon'])
+            if images.check_login(img['treasure-hunt-icon']):
+                images.click_button(img['treasure-hunt-icon'])
 
     def refresh_heroes_positions(self):
         self.login_attempts()  # Para tirar os shits do pycharm
         logger('🔃 Refreshing Heroes Positions')
-        if images.click_button(images['go-back-arrow']):
-            images.click_button(images['treasure-hunt-icon'])
+        if images.click_button(img['go-back-arrow']):
+            images.click_button(img['treasure-hunt-icon'])
 
-        elif images.click_button(images['treasure-hunt-icon']):
+        elif images.click_button(img['treasure-hunt-icon']):
             pass
 
-        elif images.click_button(images['x']):
+        elif images.click_button(img['x']):
             time.sleep(2)
-            if images.click_button(images['go-back-arrow']):
-                images.click_button(images['treasure-hunt-icon'])
+            if images.click_button(img['go-back-arrow']):
+                images.click_button(img['treasure-hunt-icon'])
             else:
-                images.click_button(images['treasure-hunt-icon'])
+                images.click_button(img['treasure-hunt-icon'])
 
     def login_attempts(self):
         pass
 
 
 heroes = Heroes()
+img = images.load_images()
 
 
 class Login:
@@ -247,14 +248,14 @@ class Login:
         """Loga no game se estiver deslogado. """
 
         # Se a wallet estiver lockada.
-        if images.click_button(images['meta1']):
-            if images.image_loop(images['unlock'], 'Unlock', False, timeout=5):
+        if images.click_button(img['meta1']):
+            if images.image_loop(img['unlock'], 'Unlock', False, timeout=5):
 
                 # Se o auto_login estiver habilitado na config, o bot irá desbloquear a wallet usado o password que está na config.
                 if c['auto_login']:
                     if self.unlock_wallet():
-                        if images.check_login(images['select-wallet-2']):
-                            images.click_button(images['select-wallet-2'])
+                        if images.check_login(img['select-wallet-2']):
+                            images.click_button(img['select-wallet-2'])
                 else:
 
                     # Caso o auto_login esteja desabilitado , irá printar uma menssagem de erro.
@@ -263,7 +264,7 @@ class Login:
                         '\033[31mAuto login not enabled in config.yaml\033[0;0m')
 
             # Caso não apareça a imagem de unlock wallet. Bot irá aguardar pelo botao de sign-in
-            elif images.image_loop(images['select-wallet-2'], 'Sign', True, timeout=5):
+            elif images.image_loop(img['select-wallet-2'], 'Sign', True, timeout=5):
                 logger('Sign Button Found')
 
             else:
@@ -284,19 +285,19 @@ class Login:
         logger('Metamask Locked, log in.')
         for n in c['metamask_password']:
             pyautogui.hotkey(n)
-        images.click_button(images['unlock'])
+        images.click_button(img['unlock'])
         logger('Wallet Unlocked Successfully')
         return True
 
     def unlocked_wallet(self) -> None:
         """ Caso a wallet não tenha erro de sign ou não logada. """
-        if images.image_loop(images['connect-wallet'], 'Connect Wallet Button', True, timeout=10):
+        if images.image_loop(img['connect-wallet'], 'Connect Wallet Button', True, timeout=10):
             logger('🎉 Connect wallet button detected, logging in!')
-            if images.image_loop(images['connect-wallet2'], 'New Connect Wallet', True, timeout=10):
+            if images.image_loop(img['connect-wallet2'], 'New Connect Wallet', True, timeout=10):
                 logger('🎉 New Connect wallet button detected!')
-                if images.image_loop(images['select-wallet-2'], 'Sign', True, timeout=10):
+                if images.image_loop(img['select-wallet-2'], 'Sign', True, timeout=10):
                     logger('Sign Button Found.')
-                    if images.image_loop(images['treasure-hunt-icon'], 'Treasure Hunt', True):
+                    if images.image_loop(img['treasure-hunt-icon'], 'Treasure Hunt', True):
                         logger('Game Logged.')
                     else:
                         pyautogui.hotkey('ctrl', 'f5')
@@ -324,30 +325,30 @@ class Login:
         """
 
         logged = False
-
+        
         while not logged:
             logger('Checking game status')
-            if images.check_login(images['new-map']):
+            if images.check_login(img['new-map']):
                 logged = True
                 break
-            if not images.check_login(images['meta1']):
-                if not images.check_login(images['network']):
+            if not images.check_login(img['meta1']):
+                if not images.check_login(img['network']):
                     logger('No Network error.')
-                    if not images.check_login(images['ok']):
+                    if not images.check_login(img['ok']):
                         logger('No Ok button found.')
-                        if not images.check_login(images['connect-wallet']):
+                        if not images.check_login(img['connect-wallet']):
                             logger('No connect wallet button found')
-                            if not images.check_login(images['treasure-hunt-icon']):
+                            if not images.check_login(img['treasure-hunt-icon']):
                                 logger('No Treasure Hunt button found.')
-                                if not images.check_login(images['go-back-arrow']):
+                                if not images.check_login(img['go-back-arrow']):
                                     logger('No Back arrow found.')
-                                    if not images.check_login(images['x']):
+                                    if not images.check_login(img['x']):
                                         logger(
                                             'Black Screen Found. Resetting Browser')
                                         last["window"].activate()
                                         pyautogui.hotkey('ctrl', 'f5')
                                         images.image_loop(
-                                            images['connect-wallet'], 'Connect wallet', click=False)
+                                            img['connect-wallet'], 'Connect wallet', click=False)
                                     else:
                                         heroes.go_to_game()
                                         logged = True
@@ -355,7 +356,7 @@ class Login:
                                 else:
                                     logged = True
                             else:
-                                images.click_button(images['treasure-hunt-icon'])
+                                images.click_button(img['treasure-hunt-icon'])
                                 logged = True
                         else:
                             self.login_again()
@@ -376,19 +377,19 @@ class Login:
 
         return logged
     
-    def select_wallet(wallet):
+    def select_wallet(self,wallet):
         """Seleiona a wallet para colocar o heroi para trabalhar.
 
 
         :param
             wallet: (STR). nome da account a ser selecionada.
         """
-        if images.image_loop(images['meta3'], 'Metamask Icon', click=True):
-            images.click_button(images['meta3'], timeout=3, threshold=0.8)
-            if images.image_loop(images['meta'], 'Wallet Change', click=False):
+        if images.image_loop(img['meta3'], 'Metamask Icon', click=True):
+            images.click_button(img['meta3'], timeout=3, threshold=0.8)
+            if images.image_loop(img['meta'], 'Wallet Change', click=False):
 
                 # Calcular a posicao do botao de mudar a wallet na metamask
-                data = images.positions(images['meta'])
+                data = images.positions(img['meta'])
                 x = []
                 count = 0
 
@@ -410,8 +411,8 @@ class Login:
                 pyautogui.click()
 
                 # Aguardar a imagem aparecer na tela  para selecionar a wallet que irá trabalhar.
-                if images.image_loop(images[wallet], wallet, click=True):
-                    images.click_button(images[wallet], timeout=3, threshold=0.8)
+                if images.image_loop(img[wallet], wallet, click=True):
+                    images.click_button(img[wallet], timeout=3, threshold=0.8)
                     time.sleep(3)
                     pyautogui.hotkey('ctrl', 'f5')
 
@@ -420,7 +421,7 @@ class Files:
     def __init__(self):
         pass
 
-    def windows_pyget() -> List:
+    def windows_pyget(self) -> List:
         """Retorna uma lista com todas as janelas do Google Chrome ativas
             com o Jogo Bombcrypto.
         
@@ -436,7 +437,7 @@ class Files:
             count += 1
         return windows
 
-    def resetDb() -> List:
+    def resetDb(self) -> List:
         """ Reseta a Database
         
         :return List
@@ -445,6 +446,11 @@ class Files:
             data = json.load(reset)
         return data
 
+    def write_data(self, data) -> None:
+        """Grava os novos dados na database."""
+        with open('db.json', 'w') as write:
+            json.dump(data, write, indent=4)
+        
 
 class Mouse:
 
