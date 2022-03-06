@@ -22,12 +22,12 @@ images = Images()
 mouse = Mouse()
 img = images.load_images()
 
-login.select_wallet('account_1')
-time.sleep(50)
 files = Files()
 
 login_attempts = 0
 windows = files.windows_pyget()
+print(windows)
+time.sleep(50)
 db = []
 
 if not c['save_log_to_file']:
@@ -72,9 +72,7 @@ def main():
         count += 1
 
     # Gravar as janelas que estao faltando na database
-    with open('db.json', 'w') as data:
-        logger('Writing data to database.')
-        json.dump(db, data, indent=4)
+    files.write_data(db)
 
     while True:
 

@@ -394,18 +394,16 @@ class Login:
                 # Calcular a posicao do botao de mudar a wallet na metamask
                 data = images.positions(img['meta'])
                 x = []
-                count = 0
 
                 # Loop para saber a posicao atual no data.
-                for n in data[0]:
+                for k, v in enumerate(data[0]):
 
-                    if count == 2:
+                    if k == 2:
 
                         # Adicionar +60 no valor para mover o mouse para o centro da imagem.
-                        x.append(n + 60)
+                        x.append(v + 60)
                     else:
-                        x.append(n)
-                    count += 1
+                        x.append(v)
 
                 # Mover o mouse ate o wallet change da metamask
                 pyautogui.moveTo(x)
@@ -430,14 +428,13 @@ class Files:
         
         """
         windows = []
-        count = 0
-        for w in pygetwindow.getWindowsWithTitle('Bombcrypto - Google Chrome'):
+        for k, w in enumerate(pygetwindow.getWindowsWithTitle('Bombcrypto - Google Chrome')):
             windows.append(
                 {
-                    "data": count,
+                    "data": k,
                     "window": w,
                 })
-            count += 1
+
         return windows
 
     def resetDb(self) -> List:
