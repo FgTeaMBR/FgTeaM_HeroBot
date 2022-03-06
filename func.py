@@ -328,9 +328,14 @@ class Login:
         
         while not logged:
             logger('Checking game status')
+            if images.check_login(img['error']):
+                images.click_button(img['error'])
+                pyautogui.hotkey('ctrl', 'f5')
+
             if images.check_login(img['new-map']):
                 logged = True
                 break
+
             if not images.check_login(img['meta1']):
                 if not images.check_login(img['network']):
                     logger('No Network error.')
@@ -377,15 +382,13 @@ class Login:
 
         return logged
     
-    def select_wallet(self,wallet):
+    def select_wallet(self, wallet):
         """Seleiona a wallet para colocar o heroi para trabalhar.
 
 
-        :param
-            wallet: (STR). nome da account a ser selecionada.
+        :param wallet: (STR). nome da account a ser selecionada.
         """
         if images.image_loop(img['meta3'], 'Metamask Icon', click=True):
-            images.click_button(img['meta3'], timeout=3, threshold=0.8)
             if images.image_loop(img['meta'], 'Wallet Change', click=False):
 
                 # Calcular a posicao do botao de mudar a wallet na metamask

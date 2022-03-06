@@ -22,6 +22,8 @@ images = Images()
 mouse = Mouse()
 img = images.load_images()
 
+login.select_wallet('account_1')
+time.sleep(50)
 files = Files()
 
 login_attempts = 0
