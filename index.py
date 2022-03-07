@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 import time
 import yaml
 import json
@@ -54,10 +55,11 @@ except Exception:
 
 def main():
     global db
-    count = 0
+    count = len(db)
 
     # Caso o numero de windows na database for menor que as a janelas ativas atuais.
     while len(windows) > len(db):
+
         logger(f'Appeding window {count} to database.')
         db.append(
             [{"window": count, "data": [
@@ -79,136 +81,130 @@ def main():
         db = files.resetDb()
 
         # Para cada janela do Google Chrome na windows list
-        for last in windows:
+        for key, last in enumerate(windows):
+            if last['data'] == db[key]['window']:
+                
+                # Ativar a janela correspondente a database.
+                last["window"].activate()
 
-            # Para cada item na database
-            for list_index in db:
+                print()
+                logger(f'Activating Bot Window {last["data"]}')
 
-                # Para cada item na window atual da database
-                for k in list_index:
+                # Verificar se todas as janelas estao logadas.
+                login.is_logged(last)
 
-                    # Se a janela atual ativa do Chrome for igual a janela da database
-                    if last['data'] == k['window']:
-                        last["window"].activate()
+                # Varrer a lista data.
+                for account_list in db[key]['data']:
 
-                        print()
-                        logger(f'Activating Bot Window {k["window"]}')
+                    # Varrer a lista account com as wallets
+                    for data_list in account_list:
 
-                        # Verificar se todas as janelas estao logadas.
-                        login.is_logged(last)
+                        # Checar o status atual , se esta trabalhando ou não.
+                        if data_list['rest'] == 'False':
 
-                        # Varrer a lista data.
-                        for account_list in k['data']:
+                            # Se estiver trabalhando verificar se precisa colocar pra descansar
+                            now = time.time()
+                            if now - data_list["heroes_work"] > mouse.add_randomness(t['send_heroes_for_work'] * 60):
+                                logger(
+                                    f'Window {last["data"]} {data_list["wallet"]} is working.')
+                                logger(
+                                    f'Sending Window {last["data"]} {data_list["wallet"]} to rest.')
 
-                            # Varrer a lista account com as wallets
-                            for data_list in account_list:
+                                if data_list['wallet'] == 'account_1':
 
-                                # Checar o status atual , se esta trabalhando ou não.
-                                if data_list['rest'] == 'False':
+                                    # Ler a database.
+                                    dados = files.resetDb()
 
-                                    # Se estiver trabalhando verificar se precisa colocar pra descansar
-                                    now = time.time()
-                                    if now - data_list["heroes_work"] > mouse.add_randomness(t['send_heroes_for_work'] * 60):
-                                        logger(
-                                            f'Window {last["data"]} {data_list["wallet"]} is working.')
-                                        logger(
-                                            f'Sending Window {last["data"]} {data_list["wallet"]} to rest.')
+                                    # Setar as novas variaveis
+                                    dados[key["window"]][0]['data'][0][0]['rest'] = 'True'
+                                    dados[key["window"]][0]['data'][1][0]['rest'] = 'False'
+                                    dados[key["window"]][0]['data'][1][0]['heroes_work'] = now
+                                    dados[key["window"]][0]['data'][0][0]['heroes_work'] = now
 
-                                        if data_list['wallet'] == 'account_1':
+                                    # Gravar os novos dados na database.
+                                    files.write_data(dados)
 
-                                            # Ler a database.
-                                            dados = files.resetDb()
+                                    # Enviar os heroes para descansar.
+                                    heroes.send_work('rest')
 
-                                            # Setar as novas variaveis
-                                            dados[k["window"]][0]['data'][0][0]['rest'] = 'True'
-                                            dados[k["window"]][0]['data'][1][0]['rest'] = 'False'
-                                            dados[k["window"]][0]['data'][1][0]['heroes_work'] = now
-                                            dados[k["window"]][0]['data'][0][0]['heroes_work'] = now
+                                    # Selecionar a waller que irá trabalhar.
+                                    login.select_wallet('account_2')
 
-                                            # Gravar os novos dados na database.
-                                            files.write_data(dados)
+                                    # Aguardar aparecer o connect button para logar novamente.
+                                    if images.image_loop(img['connect-wallet'], 'Connect Wallet', click=False):
+                                        login.is_logged(last)
 
-                                            # Enviar os heroes para descansar.
-                                            heroes.send_work('rest')
+                                    # Enviar os heroes para trabalhar.
+                                    heroes.send_work('all')
 
-                                            # Selecionar a waller que irá trabalhar.
-                                            login.select_wallet('account_2')
+                                else:
+                                    # Ler a database
+                                    dados = files.resetDb()
 
-                                            # Aguardar aparecer o connect button para logar novamente.
-                                            if images.image_loop(img['connect-wallet'], 'Connect Wallet', click=False):
-                                                login.is_logged(last)
+                                    # Setar as novas variaveis
+                                    dados[key["window"]][0]['data'][1][0]['rest'] = 'True'
+                                    dados[key["window"]][0]['data'][0][0]['rest'] = 'False'
+                                    dados[key["window"]][0]['data'][1][0]['heroes_work'] = now
+                                    dados[key["window"]][0]['data'][0][0]['heroes_work'] = now
 
-                                            # Enviar os heroes para trabalhar.
-                                            heroes.send_work('all')
+                                    # Gravar os novos dados na database. 
+                                    files.write_data(dados)
 
-                                        else:
-                                            # Ler a database
-                                            dados = files.resetDb()
+                                    # Enviar os herois para descansar.
+                                    heroes.send_work('rest')
 
-                                            # Setar as novas variaveis
-                                            dados[k["window"]][0]['data'][1][0]['rest'] = 'True'
-                                            dados[k["window"]][0]['data'][0][0]['rest'] = 'False'
-                                            dados[k["window"]][0]['data'][1][0]['heroes_work'] = now
-                                            dados[k["window"]][0]['data'][0][0]['heroes_work'] = now
+                                    # Selecionar a nova wallet que irá trabalhar.
+                                    login.select_wallet('account_1')
 
-                                            # Gravar os novos dados na database. 
-                                            files.write_data(dados)
+                                    # Esperar aparecer o botão de connect
+                                    if images.image_loop(img['connect-wallet'], 'Connect Wallet', click=False):
+                                        login.is_logged(last)
 
-                                            # Enviar os herois para descansar.
-                                            heroes.send_work('rest')
+                                    # Enviar todos os herois para trabalhar.
+                                    heroes.send_work('all')
+                            else:
 
-                                            # Selecionar a nova wallet que irá trabalhar.
-                                            login.select_wallet('account_1')
+                                # Se não estiver na hora de enviar pra descansar , printar as mensagens de log.
+                                logger(f'Current status of Window {last["data"]}')
+                                logger(f'Current Working: {data_list["wallet"]}')
 
-                                            # Esperar aparecer o botão de connect
-                                            if images.image_loop(img['connect-wallet'], 'Connect Wallet', click=False):
-                                                login.is_logged(last)
+                                next_reboot = data_list["heroes_work"] + (t["send_heroes_for_work"] * 60)
+                                next_refresh = data_list["refresh_heroes"] + (t["refresh_heroes_positions"] * 60)
+                                logger(f'Time for next hero Work: {datetime.fromtimestamp(next_reboot).strftime("%H:%M:%S")}. Current Set: {t["send_heroes_for_work"]} minutes.')
+                                logger(f'Time for next hero REFRESH: {datetime.fromtimestamp(next_refresh).strftime("%H:%M:%S")}. Current Set: {t["refresh_heroes_positions"]} minutes.')
 
-                                            # Enviar todos os herois para trabalhar.
-                                            heroes.send_work('all')
-                                    else:
+                                # Fim das menssagens de log.
+                            
+                            # Ativar o refresh heroes.
+                            now = time.time()
+                            if now - data_list["refresh_heroes"] > mouse.add_randomness(t['refresh_heroes_positions'] * 60):
 
-                                        # Se não estiver na hora de enviar pra descansar , printar as mensagens de log.
-                                        logger(f'Current status of Window {last["data"]}')
-                                        logger(f'Current Working: {data_list["wallet"]}')
+                                # Caso seja a o account_1.
+                                if data_list['wallet'] == 'account_1':
 
-                                        next_reboot = data_list["heroes_work"] + (t["send_heroes_for_work"] * 60)
-                                        next_refresh = data_list["refresh_heroes"] + (t["refresh_heroes_positions"] * 60)
-                                        logger(f'Time for next hero Work: {datetime.fromtimestamp(next_reboot).strftime("%H:%M:%S")}. Current Set: {t["send_heroes_for_work"]} minutes.')
-                                        logger(f'Time for next hero REFRESH: {datetime.fromtimestamp(next_refresh).strftime("%H:%M:%S")}. Current Set: {t["refresh_heroes_positions"]} minutes.')
+                                    # Ler os dados da database.
+                                    dados = files.resetDb()
 
-                                        # Fim das menssagens de log.
+                                    # Setar as novas variaveis.
+                                    dados[key["window"]][0]['data'][0][0]['refresh_heroes'] = now
+
+                                    # Gravar os novos dados na database.
+                                    files.write_data(dados)
+
+                                    # Fazer o refresh heroes para salvar o status atual do mapa.
+                                    heroes.refresh_heroes_positions()
+                                else:
+                                    # Ler os dados da database.
+                                    dados = files.resetDb()
+
+                                    # Setar as novas variaveis.S
+                                    dados[key["window"]][0]['data'][1][0]['refresh_heroes'] = now
                                     
-                                    # Ativar o refresh heroes.
-                                    now = time.time()
-                                    if now - data_list["refresh_heroes"] > mouse.add_randomness(t['refresh_heroes_positions'] * 60):
+                                    # Gravar os novos dados na database.
+                                    files.write_data(dados)
 
-                                        # Caso seja a o account_1.
-                                        if data_list['wallet'] == 'account_1':
-
-                                            # Ler os dados da database.
-                                            dados = files.resetDb()
-
-                                            # Setar as novas variaveis.
-                                            dados[k["window"]][0]['data'][0][0]['refresh_heroes'] = now
-
-                                            # Gravar os novos dados na database.
-                                            files.write_data(dados)
-
-                                            # Fazer o refresh heroes para salvar o status atual do mapa.
-                                            heroes.refresh_heroes_positions()
-                                        else:
-                                            # Ler os dados da database.
-                                            dados = files.resetDb()
-
-                                            # Setar as novas variaveis.S
-                                            dados[k["window"]][0]['data'][1][0]['refresh_heroes'] = now
-                                            
-                                            # Gravar os novos dados na database.
-                                            files.write_data(dados)
-
-                                            # Fazer o refresh heroes para salvar o status atual do mapa.
-                                            heroes.refresh_heroes_positions()
+                                    # Fazer o refresh heroes para salvar o status atual do mapa.
+                                    heroes.refresh_heroes_positions()
 
 
 if __name__ == '__main__':
