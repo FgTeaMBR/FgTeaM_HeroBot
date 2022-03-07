@@ -26,8 +26,7 @@ files = Files()
 
 login_attempts = 0
 windows = files.windows_pyget()
-print(windows)
-time.sleep(50)
+
 db = []
 
 if not c['save_log_to_file']:

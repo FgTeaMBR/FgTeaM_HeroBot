@@ -333,6 +333,9 @@ class Login:
                 pyautogui.hotkey('ctrl', 'f5')
 
             if images.check_login(img['new-map']):
+                dados = Files.resetDb()
+                print(f' dados {dados}')
+                time.sleep(50)
                 logged = True
                 break
 
