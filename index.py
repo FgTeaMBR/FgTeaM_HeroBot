@@ -2,6 +2,7 @@
 import time
 import yaml
 import json
+import clipboard
 
 from datetime import datetime
 from src.logger import logger
@@ -26,7 +27,14 @@ files = Files()
 
 login_attempts = 0
 windows = files.windows_pyget()
-print(windows)
+images.click_button(img['test'])
+
+account_2 = clipboard.paste()
+test = '0x836b9d26EEf0177f9bf7fBD8b62cE6C44661EbA1'
+if account_2 == test:
+    print('True')
+print(account_2)
+
 time.sleep(50)
 db = []
 
@@ -41,16 +49,14 @@ try:
 # Caso der erro de leitura ou FileNotFound criar um novo.
 except Exception:
     logger('Database Not Found.')
-    with open('db.json', 'w') as write:
-        dados = [{"window": 0, "data": [
+    database_new = [{"window": 0, "data": [
             [{"wallet": "account_1", "rest": "True", "heroes_work": 0, "heroes_rest": 0, "refresh_heroes": 0,
               "new_map": 0, "login_attempts": 0}],
             [{"wallet": "account_2", "rest": "False", "heroes_work": 0, "heroes_rest": 0, "refresh_heroes": 0,
               "new_map": 0, "login_attempts": 0}]
 
         ]}]
-        json.dump(dados, write, indent=4)
-    logger('Database created!!')
+    files.write_data(database_new)
 
 
 def main():
