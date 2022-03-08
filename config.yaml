@@ -10,7 +10,7 @@
   send_screenshot: False
 
   # api do discord para enviar as screenshots
-  discord_api: 'https://discord.com/api/webhooks/929114771863769138/7kHUOaO0eTBx3ZMk0oQwXhMcR4xHuEgmdxjnaU7F6V9-CJzGR9CWUbEKBWXDfi9RlyD3'
+  discord_api: ''
 
 
   # [en_US] Time intervals configuration
