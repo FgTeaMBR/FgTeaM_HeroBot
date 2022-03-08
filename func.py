@@ -27,20 +27,20 @@ class Images:
     def __init__(self) -> None:
         pass
 
-    def positions(self, targets_67, threshold=ct['default'], img=None):
+    def positions(self, targets, threshold=ct['default'], img=None):
         """Calcula a posicao da imagem na tela e retorna uma lista com os numeros da posicao.
 
 
-        :param targets_67: Imagem a ser procurada na tela.
+        :param targets: Imagem a ser procurada na tela.
         :param threshold: (FLOAT) 0 a 1. Tunning para procurar a imagem na tela.
         :param img: None
         :return: Lista com a posição da imagem.
         """
         if img is None:
             img = self.print_screen()
-        result = cv2.matchTemplate(img, targets_67, cv2.TM_CCOEFF_NORMED)
-        w = targets_67.shape[1]
-        h = targets_67.shape[0]
+        result = cv2.matchTemplate(img, targets, cv2.TM_CCOEFF_NORMED)
+        w = targets.shape[1]
+        h = targets.shape[0]
 
         yloc, xloc = np.where(result >= threshold)
 
@@ -152,7 +152,7 @@ class Images:
             return input_string[:-len(suffix)]
         return input_string
 
-    def load_images(self, dir_path='./targets_67/'):
+    def load_images(self, dir_path='./targets/'):
         """ Scaneia o diretorio inserido e retona um dicionario com o nome de todas as imagens encontradas
         sem o sufixo .png
 
@@ -161,12 +161,12 @@ class Images:
         """
 
         file_names = listdir(dir_path)
-        targets_67 = {}
+        targets = {}
         for file in file_names:
-            path = 'targets_67/' + file
-            targets_67[self.remove_suffix(file, '.png')] = cv2.imread(path)
+            path = 'targets/' + file
+            targets[self.remove_suffix(file, '.png')] = cv2.imread(path)
 
-        return targets_67
+        return targets
 
 
 images = Images()
