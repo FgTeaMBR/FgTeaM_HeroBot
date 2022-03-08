@@ -4,13 +4,18 @@ import time
 import pyautogui
 import pygetwindow
 import json
+
 import numpy as np
 import mss
+from random import random
 
 from os import listdir
 from cv2 import cv2
 from src.logger import logger
-from random import random
+
+# from func.mouse_click import images.click_button
+
+# from func.image_reader import load_images, check_login, image_loop
 
 stream = open('config.yaml', 'r')
 c = yaml.safe_load(stream)
@@ -28,11 +33,11 @@ class Images:
 
         :param targets_67: Imagem a ser procurada na tela.
         :param threshold: (FLOAT) 0 a 1. Tunning para procurar a imagem na tela.
-        :param self.img: None
+        :param img: None
         :return: Lista com a posição da imagem.
         """
-        if self.img is None:
-            self.img = self.print_screen()
+        if img is None:
+            img = self.print_screen()
         result = cv2.matchTemplate(img, targets_67, cv2.TM_CCOEFF_NORMED)
         w = targets_67.shape[1]
         h = targets_67.shape[0]
@@ -57,7 +62,7 @@ class Images:
 
     def click_button(self, img, timeout=3, threshold=ct['default']):
         """Procura a imagem na tela, se encontrar move o mouse ate a imagem e clica.
-        :param self.img: Imagem a ser analisada.
+        :param img: Imagem a ser analisada.
         :param timeout: (int) Tempo em segundos que o bot vai continuar procurando ate achar a imagem.
         :param threshold: (float) O quão confiante o bot precisa estar pra clicar na image, valor entre 0 e 1.
         Sendo 1 o mais confiante.
@@ -84,7 +89,7 @@ class Images:
     def check_login(self, img, name=None, timeout=1, threshold=ct['default']):
         """ Analisa se a imagem esta na tela.
 
-        :param self.img: Recebe a imagem a ser procurada.
+        :param img: Recebe a imagem a ser procurada.
         :param name: Nome da imagem (opcional).
         :param timeout: Tempo maximo de espera caso a imagem não seja encontrda.
         :param threshold: (float) 0 a 1. Tunning para imagem analisada.
@@ -111,7 +116,7 @@ class Images:
     def image_loop(self, img, name, click, timeout=15):
         """ Aguarda a imagem aparecer na tela e mostra  uma menssagem de logger. Caso desejar clica na imagem.
 
-        :param self.img: Recebe o nome da imagem a ser analisada.
+        :param img: Recebe o nome da imagem a ser analisada.
 
         :param name: Nome a ser mostrado na menssagem de logger.
 
@@ -126,17 +131,19 @@ class Images:
         while not found:
             logger(f'Waiting for {name} image. Timeout {timeout}')
             time.sleep(0.8)
-            if self.check_login(self.img):
+            if self.check_login(img):
                 if click:
-                    Images.click_button(img)
+                    images.click_button(img)
                     found = True
                 else:
                     found = True
             if timeout == 0:
                 logger(f'{name} Not Found!')
-                return False
+                found = False
+                break
+
             timeout -= 1
-        return True
+        return found
 
     def remove_suffix(self, input_string, suffix):
         """Returns the input_string without the suffix"""
@@ -145,7 +152,7 @@ class Images:
             return input_string[:-len(suffix)]
         return input_string
 
-    def load_Images(self, dir_path='./targets_67/'):
+    def load_images(self, dir_path='./targets_67/'):
         """ Scaneia o diretorio inserido e retona um dicionario com o nome de todas as imagens encontradas
         sem o sufixo .png
 
@@ -162,6 +169,9 @@ class Images:
         return targets_67
 
 
+images = Images()
+
+
 class Heroes:
     """Class para interaçoes com os herois."""
 
@@ -175,11 +185,11 @@ class Heroes:
             Se o valor recebido for 'rest', envia todos os herois para descansar.
         """
 
-        logger('Sending all Heroes to {}.'.format(
+        logger('Sending all heroes to {}.'.format(
             'work' if mode == 'all' else 'resting'))
-        self.go_to_Heroes()
+        self.go_to_heroes()
         time.sleep(2)
-        Images.click_button(self.img[mode])
+        images.click_button(img[mode])
         time.sleep(1)
         self.go_to_game()
         time.sleep(2)
@@ -188,64 +198,66 @@ class Heroes:
                 pass
                 # self.sendStashToDiscord()
 
-    def go_to_Heroes(self):
+    def go_to_heroes(self):
         """Go to Heroes page"""
         self.login_attempts()  # Para tirar os shits do pycharm
-        if Images.check_login(self.img['go-back-arrow']):
-            Images.click_button(self.img['go-back-arrow'])
+        if images.check_login(img['go-back-arrow']):
+            images.click_button(img['go-back-arrow'])
             time.sleep(1)
-            Images.click_button(self.img['hero-icon'])
+            images.click_button(img['hero-icon'])
 
-        elif Images.click_button(self.img['hero-icon']):
+        elif images.click_button(img['hero-icon']):
             pass
 
     def go_to_game(self):
         """Go back to game."""
         self.login_attempts()  # Para tirar os shits do pycharm
-        if Images.check_login(self.img['x']):
-            Images.click_button(self.img['x'])
+        if images.check_login(img['x']):
+            images.click_button(img['x'])
             time.sleep(2)
-            if Images.check_login(self.img['treasure-hunt-icon']):
-                Images.click_button(self.img['treasure-hunt-icon'])
+            if images.check_login(img['treasure-hunt-icon']):
+                images.click_button(img['treasure-hunt-icon'])
 
-    def refresh_Heroes_positions(self):
+    def refresh_heroes_positions(self):
         self.login_attempts()  # Para tirar os shits do pycharm
         logger('🔃 Refreshing Heroes Positions')
-        if Images.click_button(self.img['go-back-arrow']):
-            Images.click_button(self.img['treasure-hunt-icon'])
+        if images.click_button(img['go-back-arrow']):
+            images.click_button(img['treasure-hunt-icon'])
 
-        elif Images.click_button(self.img['treasure-hunt-icon']):
+        elif images.click_button(img['treasure-hunt-icon']):
             pass
 
-        elif Images.click_button(self.img['x']):
+        elif images.click_button(img['x']):
             time.sleep(2)
-            if Images.click_button(self.img['go-back-arrow']):
-                Images.click_button(self.img['treasure-hunt-icon'])
+            if images.click_button(img['go-back-arrow']):
+                images.click_button(img['treasure-hunt-icon'])
             else:
-                Images.click_button(self.img['treasure-hunt-icon'])
+                images.click_button(img['treasure-hunt-icon'])
 
     def login_attempts(self):
         pass
 
 
+heroes = Heroes()
+img = images.load_images()
+
 
 class Login:
-    def __init__(self):
-        self.img = Images.load_Images()
-        
+    def __init__(self) -> None:
+        pass
 
     def login_again(self) -> None:
         """Loga no game se estiver deslogado. """
 
         # Se a wallet estiver lockada.
-        if Images.click_button(self.img['meta1']):
-            if Images.image_loop(self.img['unlock'], 'Unlock', False, timeout=5):
+        if images.click_button(img['meta1']):
+            if images.image_loop(img['unlock'], 'Unlock', False):
 
                 # Se o auto_login estiver habilitado na config, o bot irá desbloquear a wallet usado o password que está na config.
                 if c['auto_login']:
                     if self.unlock_wallet():
-                        if Images.check_login(self.img['select-wallet-2']):
-                            Images.click_button(self.img['select-wallet-2'])
+                        if images.check_login(img['select-wallet-2']):
+                            images.click_button(img['select-wallet-2'])
                 else:
 
                     # Caso o auto_login esteja desabilitado , irá printar uma menssagem de erro.
@@ -254,7 +266,7 @@ class Login:
                         '\033[31mAuto login not enabled in config.yaml\033[0;0m')
 
             # Caso não apareça a imagem de unlock wallet. Bot irá aguardar pelo botao de sign-in
-            elif Images.image_loop(self.img['select-wallet-2'], 'Sign', True, timeout=5):
+            elif images.image_loop(img['select-wallet-2'], 'Sign', True, timeout=5):
                 logger('Sign Button Found')
 
             else:
@@ -275,19 +287,20 @@ class Login:
         logger('Metamask Locked, log in.')
         for n in c['metamask_password']:
             pyautogui.hotkey(n)
-        Images.click_button(self.img['unlock'])
+        images.click_button(img['unlock'])
         logger('Wallet Unlocked Successfully')
+        images.click_button(img['meta3'])
         return True
 
     def unlocked_wallet(self) -> None:
         """ Caso a wallet não tenha erro de sign ou não logada. """
-        if Images.image_loop(self.img['connect-wallet'], 'Connect Wallet Button', True, timeout=10):
+        if images.image_loop(img['connect-wallet'], 'Connect Wallet Button', True, timeout=10):
             logger('🎉 Connect wallet button detected, logging in!')
-            if Images.image_loop(self.img['connect-wallet2'], 'New Connect Wallet', True, timeout=10):
+            if images.image_loop(img['connect-wallet2'], 'New Connect Wallet', True, timeout=10):
                 logger('🎉 New Connect wallet button detected!')
-                if Images.image_loop(self.img['select-wallet-2'], 'Sign', True, timeout=10):
+                if images.image_loop(img['select-wallet-2'], 'Sign', True, timeout=10):
                     logger('Sign Button Found.')
-                    if Images.image_loop(self.img['treasure-hunt-icon'], 'Treasure Hunt', True):
+                    if images.image_loop(img['treasure-hunt-icon'], 'Treasure Hunt', True):
                         logger('Game Logged.')
                     else:
                         pyautogui.hotkey('ctrl', 'f5')
@@ -318,43 +331,40 @@ class Login:
 
         while not logged:
             logger('Checking game status')
-            if Images.check_login(self.img['error']):
-                Images.click_button(self.img['error'])
+            if images.check_login(img['error']):
+                images.click_button(img['error'])
                 pyautogui.hotkey('ctrl', 'f5')
 
-            if Images.check_login(self.img['new-map']):
-                dados = Files.resetDb()
-                print(f' dados {dados}')
-                time.sleep(50)
+            if images.check_login(img['new-map']):
                 logged = True
                 break
 
-            if not Images.check_login(self.img['meta1']):
-                if not Images.check_login(self.img['network']):
+            if not images.check_login(img['meta1']):
+                if not images.check_login(img['network']):
                     logger('No Network error.')
-                    if not Images.check_login(self.img['ok']):
+                    if not images.check_login(img['ok']):
                         logger('No Ok button found.')
-                        if not Images.check_login(self.img['connect-wallet']):
+                        if not images.check_login(img['connect-wallet']):
                             logger('No connect wallet button found')
-                            if not Images.check_login(self.img['treasure-hunt-icon']):
+                            if not images.check_login(img['treasure-hunt-icon']):
                                 logger('No Treasure Hunt button found.')
-                                if not Images.check_login(self.img['go-back-arrow']):
+                                if not images.check_login(img['go-back-arrow']):
                                     logger('No Back arrow found.')
-                                    if not Images.check_login(self.img['x']):
+                                    if not images.check_login(img['x']):
                                         logger(
                                             'Black Screen Found. Resetting Browser')
                                         last["window"].activate()
                                         pyautogui.hotkey('ctrl', 'f5')
-                                        Images.image_loop(
-                                            self.img['connect-wallet'], 'Connect wallet', click=False)
+                                        images.image_loop(
+                                            img['connect-wallet'], 'Connect wallet', click=False)
                                     else:
-                                        Heroes.go_to_game()
+                                        heroes.go_to_game()
                                         logged = True
 
                                 else:
                                     logged = True
                             else:
-                                Images.click_button(self.img['treasure-hunt-icon'])
+                                images.click_button(img['treasure-hunt-icon'])
                                 logged = True
                         else:
                             self.login_again()
@@ -376,18 +386,17 @@ class Login:
         return logged
 
     def select_wallet(self, wallet):
-
         """Seleiona a wallet para colocar o heroi para trabalhar.
 
 
         :param wallet: (STR). nome da account a ser selecionada.
         """
-        if Images.image_loop(self.img['meta3'], 'Metamask Icon', click=True):
-            if Images.image_loop(self.img['meta'], 'Wallet Change', click=False):
+        if images.image_loop(img['meta3'], 'Metamask Icon', click=True):
+            if images.image_loop(img['meta'], 'Wallet Change', click=False):
 
                 # Calcular a posicao do botao de mudar a wallet na metamask
-                data = Images.positions(self.img['meta'])
-                change_wallet_pos = []
+                data = images.positions(img['meta'])
+                x = []
 
                 # Loop para saber a posicao atual no data.
                 for k, v in enumerate(data[0]):
@@ -395,26 +404,25 @@ class Login:
                     if k == 2:
 
                         # Adicionar +60 no valor para mover o mouse para o centro da imagem.
-                        change_wallet_pos.append(v + 60)
+                        x.append(v + 60)
                     else:
-                        change_wallet_pos.append(v)
+                        x.append(v)
 
                 # Mover o mouse ate o wallet change da metamask
-                pyautogui.moveTo(change_wallet_pos)
+                pyautogui.moveTo(x)
 
                 # Clicar no botao wallet change da metamask
                 pyautogui.click()
 
                 # Aguardar a imagem aparecer na tela  para selecionar a wallet que irá trabalhar.
-                if Images.image_loop(self.img[wallet], wallet, click=True):
-                    Images.click_button(self.img[wallet], timeout=3, threshold=0.8)
+                if images.image_loop(img[wallet], wallet, click=True):
+                    images.click_button(img[wallet], timeout=3, threshold=0.8)
                     time.sleep(3)
                     pyautogui.hotkey('ctrl', 'f5')
 
 
 class Files:
     def __init__(self):
-
         pass
 
     def windows_pyget(self) -> List:
