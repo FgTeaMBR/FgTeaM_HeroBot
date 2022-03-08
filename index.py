@@ -2,7 +2,6 @@
 
 import time
 import yaml
-import json
 #import clipboard
 
 from datetime import datetime
@@ -121,10 +120,10 @@ def main():
                                     dados = files.resetDb()
 
                                     # Setar as novas variaveis
-                                    dados[key["window"]][0]['data'][0][0]['rest'] = 'True'
-                                    dados[key["window"]][0]['data'][1][0]['rest'] = 'False'
-                                    dados[key["window"]][0]['data'][1][0]['heroes_work'] = now
-                                    dados[key["window"]][0]['data'][0][0]['heroes_work'] = now
+                                    dados[key]['data'][0][0]['rest'] = 'True'
+                                    dados[key]['data'][1][0]['rest'] = 'False'
+                                    dados[key]['data'][1][0]['heroes_work'] = now
+                                    dados[key]['data'][0][0]['heroes_work'] = now
 
                                     # Gravar os novos dados na database.
                                     files.write_data(dados)
@@ -147,10 +146,10 @@ def main():
                                     dados = files.resetDb()
 
                                     # Setar as novas variaveis
-                                    dados[key["window"]][0]['data'][1][0]['rest'] = 'True'
-                                    dados[key["window"]][0]['data'][0][0]['rest'] = 'False'
-                                    dados[key["window"]][0]['data'][1][0]['heroes_work'] = now
-                                    dados[key["window"]][0]['data'][0][0]['heroes_work'] = now
+                                    dados[key]['data'][1][0]['rest'] = 'True'
+                                    dados[key]['data'][0][0]['rest'] = 'False'
+                                    dados[key]['data'][1][0]['heroes_work'] = now
+                                    dados[key]['data'][0][0]['heroes_work'] = now
 
                                     # Gravar os novos dados na database. 
                                     files.write_data(dados)
@@ -191,7 +190,7 @@ def main():
                                     dados = files.resetDb()
 
                                     # Setar as novas variaveis.
-                                    dados[key["window"]][0]['data'][0][0]['refresh_heroes'] = now
+                                    dados[key]['data'][0][0]['refresh_heroes'] = now
 
                                     # Gravar os novos dados na database.
                                     files.write_data(dados)
@@ -203,7 +202,7 @@ def main():
                                     dados = files.resetDb()
 
                                     # Setar as novas variaveis.S
-                                    dados[key["window"]][0]['data'][1][0]['refresh_heroes'] = now
+                                    dados[key]['data'][1][0]['refresh_heroes'] = now
                                     
                                     # Gravar os novos dados na database.
                                     files.write_data(dados)
