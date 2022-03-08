@@ -4,7 +4,7 @@
   auto_login: True
 
   # Set Here your Metamask Password. If you trust in this bot.
-  metamask_password: 'capa4635'
+  metamask_password: ''
 
   # Ativar ou nao o envio do screenshot
   send_screenshot: False
